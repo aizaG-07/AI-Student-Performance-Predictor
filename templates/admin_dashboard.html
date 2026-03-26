@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+
+        .card {
+            background-color: transparent !important;
+            color: white !important;
+            border-color: rgba(255,255,255,0.2) !important;
+            border-radius: 15px;
+        }
+
+        .stat-card {
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .blue { background: #007bff; }
+        .yellow { background: #ffc107; color: black; }
+
+        .table,
+        .table th,
+        .table td {
+            background-color: transparent !important;
+            color: white !important;
+            border-color: rgba(255,255,255,0.2) !important;
+        }
+
+        .card canvas {
+            max-height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark px-4">
+    <span class="navbar-brand">🎓 Admin Dashboard</span>
+
+    <div>
+        <a href="/" class="btn btn-dark btn-sm">Home</a>
+        <a href="/predict_page" class="btn btn-dark btn-sm">Predict</a>
+        <a href="/history" class="btn btn-dark btn-sm">History</a>
+
+        {% if current_user.is_admin %}
+        <a href="/admin" class="btn btn-dark btn-sm">Admin</a>
+        {% endif %}
+
+        <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <h3 class="mb-4 text-white">Admin Dashboard</h3>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            <div class="stat-card blue">
+                <h2>{{ total_users }}</h2>
+                <p>Total Students</p>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="stat-card yellow">
+                <h2>{{ total_predictions }}</h2>
+                <p>Predictions Made</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mt-4">
+
+        <!-- PIE -->
+        <div class="col-md-6">
+            <div class="card p-3 shadow text-center">
+                <h6>📊 Pass vs Fail</h6>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <!-- BAR -->
+        <div class="col-md-6">
+            <div class="card p-3 shadow text-center">
+                <h6>📈 Student Scores</h6>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Summary Table -->
+    <div class="card p-4 shadow mt-4">
+
+        <h5>📊 Prediction Summary</h5>
+
+        <table class="table table-bordered mt-3">
+            <tr>
+                <th>Period</th>
+                <th>Predictions</th>
+            </tr>
+
+            <tr>
+                <td>All</td>
+                <td>{{ total_predictions }}</td>
+            </tr>
+
+            <tr>
+                <td>Today</td>
+                <td>{{ total_predictions }}</td>
+            </tr>
+
+            <tr>
+                <td>Last 7 Days</td>
+                <td>{{ total_predictions }}</td>
+            </tr>
+
+            <tr>
+                <td>This Month</td>
+                <td>{{ total_predictions }}</td>
+            </tr>
+        </table>
+
+        <a href="/admin/data" class="btn btn-warning btn-sm">Manage Data</a>
+
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const pieCtx = document.getElementById('pieChart');
+    const barCtx = document.getElementById('barChart');
+
+    // PIE CHART
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Pass', 'Fail'],
+            datasets: [{
+                data: [{{ pass_count }}, {{ fail_count }}],
+                backgroundColor: ['#28a745', '#dc3545']
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white"
+                    }
+                }
+            }
+        }
+    });
+
+    // BAR CHART
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ names | tojson }},
+            datasets: [{
+                label: 'Scores',
+                data: {{ scores | tojson }},
+                backgroundColor: '#00c6ff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white"
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    ticks: {
+                        color: "white"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.2)"
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "white"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.2)"
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
