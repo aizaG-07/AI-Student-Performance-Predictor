@@ -22,13 +22,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ======================
-# DEPLOYMENT
-# ======================
-
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
-
 
 # ======================
 # DATABASE MODELS
@@ -40,7 +33,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100))
     password = db.Column(db.String(100))
 
-    is_admin = db.Column(db.Boolean, default=False)  # ✅ ADD THIS
+    is_admin = db.Column(db.Boolean, default=False) 
 
 
 class Prediction(db.Model):
@@ -241,3 +234,10 @@ def delete_prediction(id):
 if __name__ == "__main__":
     app.run(debug=True)
     
+# ======================
+# DEPLOYMENT
+# ======================
+
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
+
