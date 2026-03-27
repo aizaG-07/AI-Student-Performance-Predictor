@@ -5,6 +5,7 @@ import joblib
 import numpy as np
 import os
 
+
 # ======================
 # APP SETUP
 # ======================
@@ -20,6 +21,14 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# ======================
+# DEPLOYMENT
+# ======================
+
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
+
 
 # ======================
 # DATABASE MODELS
@@ -231,10 +240,4 @@ def delete_prediction(id):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-# ======================
-# DEPLOYMENT
-# ======================
-
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+    
